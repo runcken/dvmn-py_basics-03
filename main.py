@@ -1,7 +1,10 @@
 import smtplib
 from dotenv import load_dotenv
-load_dotenv()
 import os
+import base64
+
+
+load_dotenv()
 
 email_text = """Привет, %friend_name%! %my_name% приглашает тебя на \
 сайт %website%!
@@ -35,18 +38,22 @@ my_name = 'Runcken'
 email_text = email_text.format(website=website, friend_name=friend_name, \
 	my_name=my_name)
 
-letter = """\
-From: runcken.py@yandex.ru
-To: runcken@yandex.ru
-Subject: Приглашение!
-Content-Type: text/plain; charset="UTF-8";
+email_from = os.getenv('SENDER')
+email_to = os.getenv('DESTINATION')
+subject = "Приглашение!"
+encoded_subject = f"=?utf-8?B?{base64.b64encode(subject.encode\
+	('utf-8')).decode('utf-8')}?="
 
-{email_text}""".format(email_text=email_text)
+letter = """\
+From: {sender}
+To: {destination}
+subject: {encoded_subject}
+
+{email_text}""".format(email_text=email_text, sender=email_from, \
+	destination=email_to, encoded_subject=encoded_subject)
 
 letter = letter.encode("UTF-8")
 
-email_from = "runcken.py@yandex.ru"
-email_to = "runcken@yandex.ru"
 login = os.getenv('LOGIN')
 password = os.getenv('PASSWORD')
 
